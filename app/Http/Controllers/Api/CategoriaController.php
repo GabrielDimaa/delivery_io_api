@@ -90,15 +90,16 @@ class CategoriaController extends BaseController
 
     public function destroy(int $id): JsonResponse
     {
-        $categoria = Categoria::find($id);
+        $categoria = Categoria::with('subcategorias')->find($id);
         if (is_null($categoria)) {
             return $this->sendResponseError("Categoria não encontrada!");
         }
 
-        $subcategoria = Subcategoria::firstWhere('id_categoria', $id);
-        if (!is_null($subcategoria)) {
-            $subcategoria = $subcategoria->toArray();
-            return $this->sendResponseError("Não foi possível excluir.\nA categoria está sendo utilizada pela subcategoria '{$subcategoria['descricao']}'!");
+        $subcategorias = $categoria->subcategorias->toArray();
+
+        //Valida se a categoria possui alguma subcategoria vinculada.
+        if (!empty($subcategorias)) {
+            return $this->sendResponseError("Não foi possível excluir.\nA categoria está sendo utilizada pela subcategoria '{$subcategorias[0]['descricao']}'!");
         }
 
         $categoria->delete();
