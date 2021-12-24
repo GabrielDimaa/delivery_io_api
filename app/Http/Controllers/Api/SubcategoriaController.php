@@ -14,6 +14,16 @@ class SubcategoriaController extends BaseController
     {
         $data = $request->all();
 
+        //Verifica se a categoria foi passada na requisição.
+        if (!isset($data['id_categoria'])) {
+            return $this->sendResponseError(array('id_categoria' => "É necessário informar uma categoria!"), 422);
+        }
+
+        //Verifica se a descrição foi passada na requisição.
+        if (!isset($data['descricao'])) {
+            return $this->sendResponseError(array('descricao' => "O campo descrição da subcategoria é obrigatório!"), 422);
+        }
+
         //Verifica se já existe a categoria
         $categoria = Categoria::find($data['id_categoria']);
         if (is_null($categoria)) {
@@ -66,6 +76,11 @@ class SubcategoriaController extends BaseController
     {
         $data = $request->all();
 
+        //Verifica se a descrição foi passada na requisição.
+        if (!isset($data['descricao'])) {
+            return $this->sendResponseError(array('descricao' => "O campo descrição da subcategoria é obrigatório!"), 422);
+        }
+
         $subcategoria = Subcategoria::find($id);
         if (is_null($subcategoria)) {
             return $this->sendResponseError("Subcategoria não encontrada!");
@@ -94,10 +109,16 @@ class SubcategoriaController extends BaseController
 
     public function destroy(int $id): JsonResponse
     {
-        $subcategoria = Subcategoria::find($id);
-
+        $subcategoria = Subcategoria::with('produtos')->find($id);
         if (is_null($subcategoria)) {
             return $this->sendResponseError("Subcategoria não encontrada!");
+        }
+
+        $produtos = $subcategoria->produtos->toArray();
+
+        //Valida se a subcategoria possui algum produto vinculado.
+        if (!empty($produtos)) {
+            return $this->sendResponseError("Não foi possível excluir.\nA subcategoria está sendo utilizada pelo produtps '{$produtos[0]['descricao']}'!");
         }
 
         $subcategoria->delete();

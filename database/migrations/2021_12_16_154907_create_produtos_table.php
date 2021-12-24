@@ -20,7 +20,7 @@ class CreateProdutosTable extends Migration
                 ->constrained('subcategorias', 'id_subcategoria')
                 ->cascadeOnUpdate();
             $table->double('preco');
-            $table->string('sobre', 150)->nullable();
+            $table->string('sobre', 250)->nullable();
             $table->boolean('ativo')->default(true);
             $table->timestamps();
         });

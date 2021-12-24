@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Categoria;
-use App\Models\Subcategoria;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +12,11 @@ class CategoriaController extends BaseController
     public function store(Request $request): JsonResponse
     {
         $data = $request->all();
+
+        //Verifica se a descrição foi passada na requisição.
+        if (!isset($data['descricao'])) {
+            return $this->sendResponseError(array('descricao' => "O campo descrição da categoria é obrigatório!"), 422);
+        }
 
         //Verifica se já existe uma categoria com a mesma descrição.
         $categoriaCriada = Categoria::firstWhere(DB::raw('lower(descricao)'), strtolower($data['descricao']));
@@ -57,6 +61,11 @@ class CategoriaController extends BaseController
     public function update(Request $request, int $id): JsonResponse
     {
         $data = $request->all();
+
+        //Verifica se a descrição foi passada na requisição.
+        if (!isset($data['descricao'])) {
+            return $this->sendResponseError(array('descricao' => "O campo descrição da categoria é obrigatório!"), 422);
+        }
 
         $categoria = Categoria::find($id);
         if (is_null($categoria)) {
@@ -110,7 +119,6 @@ class CategoriaController extends BaseController
     protected function rules(): array
     {
         $table = (new Categoria())->getTable();
-
         return array('descricao' => "required|unique:$table|max:50");
     }
 

@@ -18,4 +18,9 @@ class Produto extends Model
         'sobre',
         'ativo'
     ];
+
+    public function subcategoria()
+    {
+        return $this::belongsTo(Subcategoria::class, 'id_subcategoria', 'id_subcategoria');
+    }
 }

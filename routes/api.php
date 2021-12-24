@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\CategoriaController;
+use App\Http\Controllers\Api\ProdutoController;
 use App\Http\Controllers\Api\SubcategoriaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -22,3 +23,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::apiResource('categorias', CategoriaController::class);
 Route::apiResource('subcategorias', SubcategoriaController::class);
+Route::apiResource('produtos', ProdutoController::class);
