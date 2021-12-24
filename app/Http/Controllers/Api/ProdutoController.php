@@ -115,8 +115,8 @@ class ProdutoController extends BaseController
             'id_subcategoria.required' => "É necessário informar uma subcategoria!",
             'preco.required' => "É necessário informar o preço do produto!",
             'sobre.max' => "O texto sobre o produto muito longa!",
-            'numeric' => "Valor inválido!",
-            'boolean' => "Valor inválido!",
+            'numeric' => "Preço inválido!",
+            'ativo.boolean' => "Valor do campo ativo é inválido!",
         );
     }
 }

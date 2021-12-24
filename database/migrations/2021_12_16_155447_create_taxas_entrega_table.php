@@ -17,6 +17,7 @@ class CreateTaxasEntregaTable extends Migration
             $table->id('id_taxa_entrega');
             $table->string('descricao', 50);
             $table->double('valor');
+            $table->timestamps();
         });
     }
 
