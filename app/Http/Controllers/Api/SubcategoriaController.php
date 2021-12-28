@@ -27,7 +27,7 @@ class SubcategoriaController extends BaseController
         //Verifica se já existe a categoria
         $categoria = Categoria::find($data['id_categoria']);
         if (is_null($categoria)) {
-            return $this->sendResponseError(array('id_categoria' => "Categoria não encontrada!"), 422);
+            return $this->sendResponseError(array('id_categoria' => "Categoria não encontrada!"));
         }
 
         //Valida se já existe uma subcategoria com a mesma descrição e categoria

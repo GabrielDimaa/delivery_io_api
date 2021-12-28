@@ -26,7 +26,7 @@ class CreatePedidoItensTable extends Migration
             $table->string('descricao', 50);
             $table->double('valor_unitario');
             $table->double('quantidade');
-            $table->string('descricao_categoria', 50);
+            $table->string('descricao_subcategoria', 50);
             $table->timestamps();
         });
     }

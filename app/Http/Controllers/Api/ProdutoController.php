@@ -21,7 +21,7 @@ class ProdutoController extends BaseController
         //Verifica se já existe a subcategoria
         $subcategoria = Subcategoria::find($data['id_subcategoria']);
         if (is_null($subcategoria)) {
-            return $this->sendResponseError(array('id_subcategoria' => "Subcategoria não encontrada!"), 422);
+            return $this->sendResponseError(array('id_subcategoria' => "Subcategoria não encontrada!"));
         }
 
         //Valida os campos do produto

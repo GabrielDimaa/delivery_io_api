@@ -15,7 +15,7 @@ class CreatePedidosTable extends Migration
     {
         Schema::create('pedidos', function (Blueprint $table) {
             $table->id('id_pedido');
-            $table->string('codigo_pedido')->unique();
+            $table->string('codigo_pedido');
             $table->string('nome', 50);
             $table->string('telefone', 11);
             $table->string('rua', 80)->nullable();
@@ -28,7 +28,7 @@ class CreatePedidosTable extends Migration
             $table->double('valor_pago')->nullable();
             $table->integer('forma_pagamento')->nullable();
             $table->integer('tipo_entrega');
-            $table->string('observacao', 150)->nullable();
+            $table->string('observacao', 250)->nullable();
             $table->timestamp('finalizado_at')->nullable();
             $table->string('tempo_estimado', 50);
             $table->foreignId('id_taxa_entrega')->nullable()

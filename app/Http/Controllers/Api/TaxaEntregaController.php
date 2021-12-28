@@ -68,7 +68,7 @@ class TaxaEntregaController extends BaseController
     public function destroy(int $id): JsonResponse {
         $taxaEntrega = TaxaEntrega::find($id);
         if (is_null($taxaEntrega)) {
-            return $this->sendResponseError("Taxa de entraga não encontrada!");
+            return $this->sendResponseError("Taxa de entrega não encontrada!");
         }
 
         $taxaEntrega->delete();
@@ -76,7 +76,7 @@ class TaxaEntregaController extends BaseController
         return $this->sendResponse(array());
     }
 
-    protected function rules()
+    protected function rules(): array
     {
         return array(
             'descricao' => 'required|max:50',
@@ -84,7 +84,7 @@ class TaxaEntregaController extends BaseController
         );
     }
 
-    protected function messages()
+    protected function messages(): array
     {
         return array(
             'descricao.required' => "O campo descrição é obrigatório!",

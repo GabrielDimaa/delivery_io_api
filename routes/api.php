@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\CategoriaController;
+use App\Http\Controllers\Api\PedidoController;
 use App\Http\Controllers\Api\ProdutoController;
 use App\Http\Controllers\Api\SubcategoriaController;
 use App\Http\Controllers\Api\TaxaEntregaController;
@@ -26,3 +27,4 @@ Route::apiResource('categorias', CategoriaController::class);
 Route::apiResource('subcategorias', SubcategoriaController::class);
 Route::apiResource('produtos', ProdutoController::class);
 Route::apiResource('taxas_entrega', TaxaEntregaController::class);
+Route::apiResource('pedidos', PedidoController::class);

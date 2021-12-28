@@ -12,6 +12,9 @@ class TaxaEntrega extends Model
     protected $table = 'taxas_entrega';
     protected $primaryKey = 'id_taxa_entrega';
 
+    public const DESCRICAO_DEFAULT = "Padrão";
+    public const VALOR_DEFAULT = 4.50;
+
     protected $fillable = [
         'descricao',
         'valor',

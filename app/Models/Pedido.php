@@ -32,4 +32,9 @@ class Pedido extends Model
         'descricao_taxa_entrega',
         'valor_taxa_entrega',
     ];
+
+    public function itens()
+    {
+        return $this::hasMany(PedidoItem::class, 'id_pedido', 'id_pedido');
+    }
 }

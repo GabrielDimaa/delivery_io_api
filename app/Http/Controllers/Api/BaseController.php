@@ -25,6 +25,8 @@ abstract class BaseController extends Controller
             'error' => $error,
         );
 
+        if ($code == 0) $code = 500;
+
         return response()->json($response, $code);
     }
 

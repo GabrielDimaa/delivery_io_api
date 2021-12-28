@@ -18,6 +18,6 @@ class PedidoItem extends Model
         'descricao',
         'valor_unitario',
         'quantidade',
-        'descricao_categoria'
+        'descricao_subcategoria'
     ];
 }
