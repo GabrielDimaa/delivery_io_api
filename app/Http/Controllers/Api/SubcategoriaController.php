@@ -16,18 +16,18 @@ class SubcategoriaController extends BaseController
 
         //Verifica se a categoria foi passada na requisição.
         if (!isset($data['id_categoria'])) {
-            return $this->sendResponseError(array('id_categoria' => "É necessário informar uma categoria!"), 422);
+            return $this->sendResponseError("É necessário informar uma categoria!", 422);
         }
 
         //Verifica se a descrição foi passada na requisição.
         if (!isset($data['descricao'])) {
-            return $this->sendResponseError(array('descricao' => "O campo descrição da subcategoria é obrigatório!"), 422);
+            return $this->sendResponseError("O campo descrição da subcategoria é obrigatório!", 422);
         }
 
         //Verifica se já existe a categoria
         $categoria = Categoria::find($data['id_categoria']);
         if (is_null($categoria)) {
-            return $this->sendResponseError(array('id_categoria' => "Categoria não encontrada!"));
+            return $this->sendResponseError("Categoria não encontrada!");
         }
 
         //Valida se já existe uma subcategoria com a mesma descrição e categoria
@@ -35,13 +35,13 @@ class SubcategoriaController extends BaseController
             ->where('id_categoria', $data['id_categoria'])->first();
 
         if (!is_null($subcategoriaCriada)) {
-            return $this->sendResponseError(array('descricao' => "Já existe uma subcategoria com esta descrição!"), 422);
+            return $this->sendResponseError("Já existe uma subcategoria com esta descrição!", 422);
         }
 
         //Valida os campos da subcategoria
         $validate = $this->validator($data, $this->rules(), $this->messages());
         if ($validate->fails()) {
-            return $this->sendResponseError($validate->errors(), 422);
+            return $this->sendResponseError($validate->errors()->first(), 422);
         }
 
         $subcategoria = Subcategoria::create($data);
@@ -78,7 +78,7 @@ class SubcategoriaController extends BaseController
 
         //Verifica se a descrição foi passada na requisição.
         if (!isset($data['descricao'])) {
-            return $this->sendResponseError(array('descricao' => "O campo descrição da subcategoria é obrigatório!"), 422);
+            return $this->sendResponseError("O campo descrição da subcategoria é obrigatório!", 422);
         }
 
         $subcategoria = Subcategoria::find($id);
@@ -94,12 +94,12 @@ class SubcategoriaController extends BaseController
             ->where('id_subcategoria', '!=', $id)->first();
 
         if (!is_null($subcategoriaCriada)) {
-            return $this->sendResponseError(array('descricao' => "Já existe uma subcategoria com esta descrição!"), 422);
+            return $this->sendResponseError("Já existe uma subcategoria com esta descrição!", 422);
         }
 
         $validate = $this->validator($subcategoria->toArray(), $this->rules(), $this->messages());
         if ($validate->fails()) {
-            return $this->sendResponseError($validate->errors(), 422);
+            return $this->sendResponseError($validate->errors()->first(), 422);
         }
 
         $subcategoria->save();

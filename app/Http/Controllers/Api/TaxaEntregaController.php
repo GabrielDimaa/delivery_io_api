@@ -15,7 +15,7 @@ class TaxaEntregaController extends BaseController
         //Valida os dados vindos da requisição.
         $validate = $this->validator($data, $this->rules(), $this->messages());
         if ($validate->fails()) {
-            return $this->sendResponseError($validate->errors(), 422);
+            return $this->sendResponseError($validate->errors()->first(), 422);
         }
 
         $taxaEntrega = TaxaEntrega::create($data);
@@ -57,7 +57,7 @@ class TaxaEntregaController extends BaseController
 
         $validate = $this->validator($taxaEntrega->toArray(), $this->rules(), $this->messages());
         if ($validate->fails()) {
-            return $this->sendResponseError($validate->errors(), 422);
+            return $this->sendResponseError($validate->errors()->first(), 422);
         }
 
         $taxaEntrega->save();

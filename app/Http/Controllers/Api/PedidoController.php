@@ -29,7 +29,7 @@ class PedidoController extends BaseController
             //Valida os campos do pedido.
             $validate = $this->validator($data, $this->rules(), $this->messages());
             if ($validate->fails()) {
-                return $this->sendResponseError($validate->errors(), 422);
+                return $this->sendResponseError($validate->errors()->first(), 422);
             }
 
             //Valida o endereço e o tipo de entrega caso seja "Entrega"
@@ -83,7 +83,7 @@ class PedidoController extends BaseController
                 //Valida os itens do pedido.
                 $validate = $this->validateItens($item);
                 if ($validate->fails()) {
-                    return $this->sendResponseError($validate->errors(), 422);
+                    return $this->sendResponseError($validate->errors()->first(), 422);
                 }
 
                 //Verifica se existe ou está ativo o produto.

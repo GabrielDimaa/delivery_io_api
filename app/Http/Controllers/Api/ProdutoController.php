@@ -15,19 +15,19 @@ class ProdutoController extends BaseController
 
         //Verifica se a subcategoria foi passada na requisição.
         if (!isset($data['id_subcategoria'])) {
-            return $this->sendResponseError(array('id_subcategoria' => 'É necessário informar uma subcategoria!'));
+            return $this->sendResponseError("É necessário informar uma subcategoria!");
         }
 
         //Verifica se já existe a subcategoria
         $subcategoria = Subcategoria::find($data['id_subcategoria']);
         if (is_null($subcategoria)) {
-            return $this->sendResponseError(array('id_subcategoria' => "Subcategoria não encontrada!"));
+            return $this->sendResponseError("Subcategoria não encontrada!");
         }
 
         //Valida os campos do produto
         $validate = $this->validator($data, $this->rules(), $this->messages());
         if ($validate->fails()) {
-            return $this->sendResponseError($validate->errors(), 422);
+            return $this->sendResponseError($validate->errors()->first(), 422);
         }
 
         $produto = Produto::create($data);
@@ -70,7 +70,7 @@ class ProdutoController extends BaseController
             $subcategoria = Subcategoria::find($data['id_subcategoria']);
 
             if (is_null($subcategoria)) {
-                return $this->sendResponseError(array('id_subcategoria' => "Subcategoria não encontrada!"));
+                return $this->sendResponseError("Subcategoria não encontrada!");
             }
         }
 
@@ -78,7 +78,7 @@ class ProdutoController extends BaseController
 
         $validate = $this->validator($produto->toArray(), $this->rules(), $this->messages());
         if ($validate->fails()) {
-            return $this->sendResponseError($validate->errors(), 422);
+            return $this->sendResponseError($validate->errors()->first(), 422);
         }
 
         $produto->save();

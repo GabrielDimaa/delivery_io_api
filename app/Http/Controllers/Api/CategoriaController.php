@@ -15,19 +15,19 @@ class CategoriaController extends BaseController
 
         //Verifica se a descrição foi passada na requisição.
         if (!isset($data['descricao'])) {
-            return $this->sendResponseError(array('descricao' => "O campo descrição da categoria é obrigatório!"), 422);
+            return $this->sendResponseError("O campo descrição da categoria é obrigatório!", 422);
         }
 
         //Verifica se já existe uma categoria com a mesma descrição.
         $categoriaCriada = Categoria::firstWhere(DB::raw('lower(descricao)'), strtolower($data['descricao']));
         if (!is_null($categoriaCriada)) {
-            return $this->sendResponseError(array('descricao' => "Já existe uma categoria com esta descrição!"), 422);
+            return $this->sendResponseError("Já existe uma categoria com esta descrição!", 422);
         }
 
         //Valida os dados vindos da requisição.
         $validate = $this->validator($data, $this->rules(), $this->messages());
         if ($validate->fails()) {
-            return $this->sendResponseError($validate->errors(), 422);
+            return $this->sendResponseError($validate->errors()->first(), 422);
         }
 
         $categoria = Categoria::create($data);
@@ -64,7 +64,7 @@ class CategoriaController extends BaseController
 
         //Verifica se a descrição foi passada na requisição.
         if (!isset($data['descricao'])) {
-            return $this->sendResponseError(array('descricao' => "O campo descrição da categoria é obrigatório!"), 422);
+            return $this->sendResponseError("O campo descrição da categoria é obrigatório!", 422);
         }
 
         $categoria = Categoria::find($id);
@@ -83,12 +83,12 @@ class CategoriaController extends BaseController
                 ->where('id_categoria', '!=', $id)->first();
 
             if (!is_null($categoriaCriada)) {
-                return $this->sendResponseError(array('descricao' => "Já existe uma categoria com esta descrição!"), 422);
+                return $this->sendResponseError("Já existe uma categoria com esta descrição!", 422);
             }
 
             $validate = $this->validator($categoria->toArray(), $this->rules(), $this->messages());
             if ($validate->fails()) {
-                return $this->sendResponseError($validate->errors(), 422);
+                return $this->sendResponseError($validate->errors()->first(), 422);
             }
         }
 
