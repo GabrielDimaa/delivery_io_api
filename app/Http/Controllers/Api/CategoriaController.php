@@ -37,7 +37,7 @@ class CategoriaController extends BaseController
 
     public function show(int $id): JsonResponse
     {
-        $categoria = Categoria::find($id);
+        $categoria = Categoria::with('subcategorias')->find($id);
 
         if (is_null($categoria)) {
             return $this->sendResponseError("Categoria não encontrada!");
@@ -48,7 +48,7 @@ class CategoriaController extends BaseController
 
     public function index(): JsonResponse
     {
-        $categorias = Categoria::all();
+        $categorias = Categoria::with('subcategorias')->get();
 
         $data = array(
             'count' => count($categorias),
