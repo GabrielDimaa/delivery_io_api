@@ -13,14 +13,20 @@ class Produto extends Model
 
     protected $fillable = [
         'descricao',
+        'id_categoria',
         'id_subcategoria',
         'preco',
         'sobre',
         'ativo'
     ];
 
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class, 'id_categoria', 'id_categoria');
+    }
+
     public function subcategoria()
     {
-        return $this::belongsTo(Subcategoria::class, 'id_subcategoria', 'id_subcategoria');
+        return $this->belongsTo(Subcategoria::class, 'id_subcategoria', 'id_subcategoria');
     }
 }

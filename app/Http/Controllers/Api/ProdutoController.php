@@ -58,7 +58,7 @@ class ProdutoController extends BaseController
     }
 
     public function show(int $id): JsonResponse {
-        $produto = Produto::find($id);
+        $produto = Produto::with("categoria", "subcategoria")->find($id);
 
         if (is_null($produto)) {
             return $this->sendResponseError("Produto não encontrado!");
@@ -68,7 +68,7 @@ class ProdutoController extends BaseController
     }
 
     public function index(): JsonResponse {
-        $produtos = Produto::all();
+        $produtos = Produto::with("categoria", "subcategoria")->get();
 
         $data = array(
             'count' => count($produtos),
