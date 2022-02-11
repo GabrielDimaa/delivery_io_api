@@ -50,6 +50,7 @@ class ProdutoController extends BaseController
             }
 
             $produto = Produto::create($data);
+            $produto = Produto::with("categoria", "subcategoria")->find($produto->id_produto);
 
             return $this->sendResponse($produto);
         } catch (Exception $e) {
@@ -104,6 +105,7 @@ class ProdutoController extends BaseController
         }
 
         $produto->save();
+        $produto = Produto::with("categoria", "subcategoria")->find($produto->id_produto);
 
         return $this->sendResponse($produto);
     }
