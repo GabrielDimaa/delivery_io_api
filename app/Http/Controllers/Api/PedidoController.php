@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\StatusPedido;
 use App\Enums\TipoEntrega;
 use App\Models\Pedido;
 use App\Models\PedidoItem;
@@ -26,6 +27,9 @@ class PedidoController extends BaseController
             //Gera o código do pedido
             $data['codigo_pedido'] = $this->gerarCodigoPedido();
 
+            //Seta o status do pedido
+            $data['status'] = StatusPedido::EmAberto->value;
+
             //Valida os campos do pedido.
             $validate = $this->validator($data, $this->rules(), $this->messages());
             if ($validate->fails()) {
@@ -33,7 +37,7 @@ class PedidoController extends BaseController
             }
 
             //Valida o endereço e o tipo de entrega caso seja "Entrega"
-            if ($data['tipo_entrega'] == TipoEntrega::Entrega) {
+            if ($data['tipo_entrega'] == TipoEntrega::Entrega->value) {
                 if (is_null($data['rua']) || is_null($data['bairro']) || is_null($data['numero']) || is_null($data['cep']) || is_null($data['cidade'])) {
                     throw new Exception("É necessário informar o endereço completo para entrega!", 500);
                 }

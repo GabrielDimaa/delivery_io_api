@@ -25,6 +25,7 @@ class Pedido extends Model
         'valor_pago',
         'forma_pagamento',
         'tipo_entrega',
+        'status',
         'observacao',
         'finalizado_at',
         'tempo_estimado',
