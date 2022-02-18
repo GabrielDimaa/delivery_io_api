@@ -28,6 +28,7 @@ class Pedido extends Model
         'status',
         'observacao',
         'finalizado_at',
+        'cancelado_at',
         'tempo_estimado',
         'id_taxa_entrega',
         'descricao_taxa_entrega',
