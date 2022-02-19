@@ -128,9 +128,39 @@ class PedidoController extends BaseController
         return $this->sendResponse($pedido);
     }
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $pedidos = Pedido::with('itens')->get();
+        $data = $request->all();
+
+        $status = $data['status'] ?? null;
+        $dataInicio = $data['data_inicio'] ?? null;
+        $dataFim = $data['data_fim'] ?? null;
+
+        $query = Pedido::with('itens');
+
+        if (!is_null($status)) {
+            if ($status == StatusPedido::Aceito->value) {
+                $query->whereIn('status', array(
+                    StatusPedido::Aceito->value,
+                    StatusPedido::EmRotaDeEntrega->value,
+                    StatusPedido::ProntoParaRetirada->value
+                ));
+            } else {
+                $query->where('status', $status);
+            }
+        }
+
+        if (!is_null($dataInicio) && !is_null($dataFim)) {
+            $query->whereBetween('created_at', [$dataInicio, $dataFim]);
+        } else if (!is_null($dataInicio) && is_null($dataFim)) {
+            $query->where('created_at', '>', $dataInicio);
+        } else if (is_null($dataInicio) && !is_null($dataFim)) {
+            $query->where('created_at', '<', $dataFim);
+        } else {
+            $query->where('created_at', '>', Carbon::now()->subDay());
+        }
+
+        $pedidos = $query->get();
 
         $data = array(
             'count' => count($pedidos),
