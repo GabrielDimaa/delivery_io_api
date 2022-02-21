@@ -17,6 +17,7 @@ class PedidoItem extends Model
         'id_produto',
         'descricao',
         'valor_unitario',
+        'valor_total',
         'quantidade',
         'descricao_subcategoria'
     ];

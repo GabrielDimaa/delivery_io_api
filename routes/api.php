@@ -26,3 +26,5 @@ Route::apiResource('categorias', CategoriaController::class);
 Route::apiResource('produtos', ProdutoController::class);
 Route::apiResource('taxas_entrega', TaxaEntregaController::class);
 Route::apiResource('pedidos', PedidoController::class);
+Route::put('/pedidos/status/{id}', [PedidoController::class, 'alterarStatusPedido']);
+Route::put('/pedidos/cancelar/{id}', [PedidoController::class, 'cancelarPedido']);

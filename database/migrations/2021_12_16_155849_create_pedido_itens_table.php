@@ -25,6 +25,7 @@ class CreatePedidoItensTable extends Migration
                 ->nullOnDelete();
             $table->string('descricao', 50);
             $table->double('valor_unitario');
+            $table->double('valor_total');
             $table->double('quantidade');
             $table->string('descricao_subcategoria', 50);
             $table->timestamps();

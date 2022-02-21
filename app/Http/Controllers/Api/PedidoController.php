@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\StatusPedido;
 use App\Enums\TipoEntrega;
 use App\Models\Pedido;
 use App\Models\PedidoItem;
 use App\Models\Produto;
 use App\Models\TaxaEntrega;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -26,6 +28,9 @@ class PedidoController extends BaseController
             //Gera o código do pedido
             $data['codigo_pedido'] = $this->gerarCodigoPedido();
 
+            //Seta o status do pedido
+            $data['status'] = StatusPedido::EmAberto->value;
+
             //Valida os campos do pedido.
             $validate = $this->validator($data, $this->rules(), $this->messages());
             if ($validate->fails()) {
@@ -33,7 +38,7 @@ class PedidoController extends BaseController
             }
 
             //Valida o endereço e o tipo de entrega caso seja "Entrega"
-            if ($data['tipo_entrega'] == TipoEntrega::Entrega) {
+            if ($data['tipo_entrega'] == TipoEntrega::Entrega->value) {
                 if (is_null($data['rua']) || is_null($data['bairro']) || is_null($data['numero']) || is_null($data['cep']) || is_null($data['cidade'])) {
                     throw new Exception("É necessário informar o endereço completo para entrega!", 500);
                 }
@@ -112,7 +117,8 @@ class PedidoController extends BaseController
         }
     }
 
-    public function show(int $id): JsonResponse {
+    public function show(int $id): JsonResponse
+    {
         $pedido = Pedido::with('itens')->find($id);
 
         if (is_null($pedido)) {
@@ -122,8 +128,39 @@ class PedidoController extends BaseController
         return $this->sendResponse($pedido);
     }
 
-    public function index(): JsonResponse {
-        $pedidos = Pedido::with('itens')->get();
+    public function index(Request $request): JsonResponse
+    {
+        $data = $request->all();
+
+        $status = $data['status'] ?? null;
+        $dataInicio = $data['data_inicio'] ?? null;
+        $dataFim = $data['data_fim'] ?? null;
+
+        $query = Pedido::with('itens');
+
+        if (!is_null($status)) {
+            if ($status == StatusPedido::Aceito->value) {
+                $query->whereIn('status', array(
+                    StatusPedido::Aceito->value,
+                    StatusPedido::EmRotaDeEntrega->value,
+                    StatusPedido::ProntoParaRetirada->value
+                ));
+            } else {
+                $query->where('status', $status);
+            }
+        }
+
+        if (!is_null($dataInicio) && !is_null($dataFim)) {
+            $query->whereBetween('created_at', [$dataInicio, $dataFim]);
+        } else if (!is_null($dataInicio) && is_null($dataFim)) {
+            $query->where('created_at', '>', $dataInicio);
+        } else if (is_null($dataInicio) && !is_null($dataFim)) {
+            $query->where('created_at', '<', $dataFim);
+        } else {
+            $query->where('created_at', '>', Carbon::now()->subDay());
+        }
+
+        $pedidos = $query->get();
 
         $data = array(
             'count' => count($pedidos),
@@ -133,7 +170,8 @@ class PedidoController extends BaseController
         return $this->sendResponse($data);
     }
 
-    public function destroy(int $id): JsonResponse {
+    public function destroy(int $id): JsonResponse
+    {
         $pedido = Pedido::find($id);
         if (is_null($pedido)) {
             return $this->sendResponseError("Pedido não encontrado!");
@@ -142,6 +180,65 @@ class PedidoController extends BaseController
         $pedido->delete();
 
         return $this->sendResponse(array());
+    }
+
+    public function alterarStatusPedido(Request $request, int $idPedido): JsonResponse
+    {
+        try {
+            $data = $request->all();
+
+            $pedido = Pedido::find($idPedido);
+            $status = StatusPedido::tryFrom($data['status']);
+
+            if (is_null($pedido)) {
+                throw new Exception("Pedido não encontrado!", 404);
+            }
+
+            if (is_null($status)) {
+                throw new Exception("Status inexistente!", 404);
+            }
+
+            if ($pedido->tipo_entrega == TipoEntrega::Entrega->value) {
+                if ($data['status'] == StatusPedido::ProntoParaRetirada->value) {
+                    throw new Exception("Pedido com entrega não pode ser retirado!", 422);
+                }
+            } else {
+                if ($data['status'] == StatusPedido::EmRotaDeEntrega->value) {
+                    throw new Exception("Pedido para retirada não pode ser entregue!", 422);
+                }
+            }
+
+            $pedido->status = $status->value;
+            $pedido->save();
+
+            return $this->sendResponse($pedido);
+        } catch (Exception $e) {
+            return $this->sendResponseError($e->getMessage(), $e->getCode());
+        }
+    }
+
+    public function cancelarPedido(int $idPedido): JsonResponse
+    {
+        try {
+            $pedido = Pedido::find($idPedido);
+
+            if (is_null($pedido)) {
+                throw new Exception("Pedido não encontrado!", 404);
+            }
+
+            if ($pedido->status == StatusPedido::Finalizado->value) {
+                throw new Exception("Pedido finalizado não pode ser cancelado!", 422);
+            }
+
+            $pedido->status = StatusPedido::Cancelado->value;
+            $pedido->cancelado_at = Carbon::now();
+
+            $pedido->save();
+
+            return $this->sendResponse($pedido);
+        } catch (Exception $e) {
+            return $this->sendResponseError($e->getMessage(), $e->getCode());
+        }
     }
 
     private function gerarCodigoPedido(): string

@@ -28,8 +28,10 @@ class CreatePedidosTable extends Migration
             $table->double('valor_pago')->nullable();
             $table->integer('forma_pagamento')->nullable();
             $table->integer('tipo_entrega');
+            $table->integer('status');
             $table->string('observacao', 250)->nullable();
             $table->timestamp('finalizado_at')->nullable();
+            $table->timestamp('cancelado_at')->nullable();
             $table->string('tempo_estimado', 50);
             $table->foreignId('id_taxa_entrega')->nullable()
                 ->constrained('taxas_entrega', 'id_taxa_entrega')
