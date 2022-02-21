@@ -11,18 +11,20 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class EnviarPedido
+class EnviarPedido implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+
+    public Pedido $pedido;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($pedido)
     {
-        //
+        $this->pedido = $pedido;
     }
 
     /**
@@ -32,6 +34,16 @@ class EnviarPedido
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('channel-name');
+        return new PrivateChannel('pedido');
+    }
+
+    public function broadcastAs(): string
+    {
+        return "EnviarPedido";
+    }
+
+    public function broadcastWith(): array
+    {
+        return array("pedido" => $this->pedido);
     }
 }

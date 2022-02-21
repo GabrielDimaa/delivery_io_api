@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\StatusPedido;
 use App\Enums\TipoEntrega;
+use App\Events\Pedido\EnviarPedido;
 use App\Models\Pedido;
 use App\Models\PedidoItem;
 use App\Models\Produto;
@@ -13,6 +14,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 
 class PedidoController extends BaseController
 {
@@ -109,6 +111,10 @@ class PedidoController extends BaseController
             #endregion
 
             DB::commit();
+
+            $pedido = Pedido::with('itens')->find($pedido->id_pedido);
+
+            Event::dispatch(new EnviarPedido($pedido));
 
             return $this->sendResponse($pedido);
         } catch (Exception $e) {
