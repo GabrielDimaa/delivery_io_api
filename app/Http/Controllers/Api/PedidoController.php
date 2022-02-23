@@ -166,7 +166,7 @@ class PedidoController extends BaseController
             $query->where('created_at', '>', Carbon::now()->subDay());
         }
 
-        $pedidos = $query->get();
+        $pedidos = $query->orderBy('created_at', 'desc')->get();
 
         $data = array(
             'count' => count($pedidos),
