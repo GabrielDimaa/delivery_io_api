@@ -5,8 +5,6 @@ namespace App\Events\Pedido;
 use App\Models\Pedido;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -34,16 +32,16 @@ class EnviarPedido implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('pedido');
+        return new Channel('pedido');
     }
 
     public function broadcastAs(): string
     {
-        return "EnviarPedido";
+        return "Pedido";
     }
 
-    public function broadcastWith(): array
+    public function broadcastWith()
     {
-        return array("pedido" => $this->pedido);
+        return array('pedido' => $this->pedido);
     }
 }
