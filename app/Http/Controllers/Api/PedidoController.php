@@ -156,17 +156,19 @@ class PedidoController extends BaseController
             }
         }
 
+        $columnDataCriado = "created_at";
+
         if (!is_null($dataInicio) && !is_null($dataFim)) {
-            $query->whereBetween('created_at', [$dataInicio, $dataFim]);
+            $query->whereBetween($columnDataCriado, [$dataInicio, $dataFim]);
         } else if (!is_null($dataInicio) && is_null($dataFim)) {
-            $query->where('created_at', '>', $dataInicio);
+            $query->where($columnDataCriado, '>', $dataInicio);
         } else if (is_null($dataInicio) && !is_null($dataFim)) {
-            $query->where('created_at', '<', $dataFim);
+            $query->where($columnDataCriado, '<', $dataFim);
         } else {
-            $query->where('created_at', '>', Carbon::now()->subDay());
+            $query->where($columnDataCriado, '>', Carbon::now()->subDay());
         }
 
-        $pedidos = $query->orderBy('created_at', 'desc')->get();
+        $pedidos = $query->orderBy($columnDataCriado, 'desc')->get();
 
         $data = array(
             'count' => count($pedidos),
