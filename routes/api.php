@@ -1,10 +1,13 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoriaController;
 use App\Http\Controllers\Api\PedidoController;
 use App\Http\Controllers\Api\ProdutoController;
 use App\Http\Controllers\Api\TaxaEntregaController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Middleware\JwtMiddleware;
+use App\Http\Middleware\SecretMiddleware;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,13 +21,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::middleware([SecretMiddleware::class])->group(function () {
+    Route::post('login', [AuthController::class, 'login']);
 
-Route::apiResource('categorias', CategoriaController::class);
-Route::apiResource('produtos', ProdutoController::class);
-Route::apiResource('taxas_entrega', TaxaEntregaController::class);
-Route::apiResource('pedidos', PedidoController::class);
-Route::put('/pedidos/status/{id}', [PedidoController::class, 'alterarStatusPedido']);
-Route::put('/pedidos/cancelar/{id}', [PedidoController::class, 'cancelarPedido']);
+    Route::middleware([JwtMiddleware::class])->group(function () {
+        Route::apiResource('user', UserController::class);
+        Route::apiResource('categorias', CategoriaController::class);
+        Route::apiResource('produtos', ProdutoController::class);
+        Route::apiResource('taxas_entrega', TaxaEntregaController::class);
+
+        Route::group(['prefix' => 'pedidos'], function () {
+            Route::apiResource('/', PedidoController::class);
+
+            Route::put('status/{id}', [PedidoController::class, 'alterarStatusPedido']);
+            Route::put('cancelar/{id}', [PedidoController::class, 'cancelarPedido']);
+        });
+    });
+});
