@@ -22,9 +22,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware([SecretMiddleware::class])->group(function () {
-    Route::post('login', [AuthController::class, 'login']);
+    Route::group(['prefix' => 'auth'], function () {
+        Route::post('login', [AuthController::class, 'login']);
+        Route::post('refresh', [AuthController::class, 'refresh']);
+    });
 
     Route::middleware([JwtMiddleware::class])->group(function () {
+        Route::post('auth/user', [AuthController::class, 'getUser']);
+
         Route::apiResource('user', UserController::class);
         Route::apiResource('categorias', CategoriaController::class);
         Route::apiResource('produtos', ProdutoController::class);
@@ -32,7 +37,6 @@ Route::middleware([SecretMiddleware::class])->group(function () {
 
         Route::group(['prefix' => 'pedidos'], function () {
             Route::apiResource('/', PedidoController::class);
-
             Route::put('status/{id}', [PedidoController::class, 'alterarStatusPedido']);
             Route::put('cancelar/{id}', [PedidoController::class, 'cancelarPedido']);
         });
