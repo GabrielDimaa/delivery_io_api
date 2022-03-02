@@ -24,11 +24,7 @@ class JwtMiddleware
                 throw new TokenInvalidException();
             }
         } catch (Exception $err) {
-            if ($err instanceof TokenInvalidException || $err instanceof TokenExpiredException) {
-                abort(403, "Sem acesso");
-            } else {
-                abort(403, "Sem acesso");
-            }
+            abort(401, "Sem acesso");
         }
 
         return $next($request);

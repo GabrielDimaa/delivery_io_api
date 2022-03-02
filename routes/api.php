@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware([SecretMiddleware::class])->group(function () {
+    Route::apiResource('user', UserController::class);
+
     Route::group(['prefix' => 'auth'], function () {
         Route::post('login', [AuthController::class, 'login']);
         Route::post('refresh', [AuthController::class, 'refresh']);
@@ -29,8 +31,6 @@ Route::middleware([SecretMiddleware::class])->group(function () {
 
     Route::middleware([JwtMiddleware::class])->group(function () {
         Route::post('auth/user', [AuthController::class, 'getUser']);
-
-        Route::apiResource('user', UserController::class);
         Route::apiResource('categorias', CategoriaController::class);
         Route::apiResource('produtos', ProdutoController::class);
         Route::apiResource('taxas_entrega', TaxaEntregaController::class);
