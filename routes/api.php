@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoriaController;
+use App\Http\Controllers\Api\ComplementoController;
 use App\Http\Controllers\Api\PedidoController;
 use App\Http\Controllers\Api\ProdutoController;
 use App\Http\Controllers\Api\TaxaEntregaController;
@@ -34,6 +35,11 @@ Route::middleware([SecretMiddleware::class])->group(function () {
         Route::apiResource('categorias', CategoriaController::class);
         Route::apiResource('produtos', ProdutoController::class);
         Route::apiResource('taxas_entrega', TaxaEntregaController::class);
+
+        Route::group(['prefix' => 'complementos'], function () {
+            Route::apiResource('/', ComplementoController::class);
+            Route::get('categorias_complementos', [ComplementoController::class, 'getCategoriasComplementos']);
+        });
 
         Route::group(['prefix' => 'pedidos'], function () {
             Route::apiResource('/', PedidoController::class);

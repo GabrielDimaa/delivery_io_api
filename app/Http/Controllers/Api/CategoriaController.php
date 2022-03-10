@@ -107,7 +107,7 @@ class CategoriaController extends BaseController
             $subcategoriasNaoDeletadas = array();
 
             foreach ($data['subcategorias'] as $subcategoria) {
-                if ($subcategoria['deleted']) {
+                if (isset($subcategoria['deleted']) && $subcategoria['deleted']) {
                     $subcategoriasDeletadas[] = $subcategoria;
                 } else {
                     $subcategoriasNaoDeletadas[] = $subcategoria;
@@ -212,9 +212,13 @@ class CategoriaController extends BaseController
         try {
             DB::beginTransaction();
 
-            $categoria = Categoria::with('subcategorias')->find($id);
+            $categoria = Categoria::with('subcategorias', 'complementos')->find($id);
             if (is_null($categoria)) {
                 throw new Exception("Categoria não encontrada!");
+            }
+
+            if (!empty($categoria->complementos)) {
+                throw new Exception("O complemento '{$categoria->complementos[0]['descricao']}' está utilizando esta categoria!", 422);
             }
 
             foreach ($categoria->subcategorias as $sub) {
@@ -237,21 +241,23 @@ class CategoriaController extends BaseController
         }
     }
 
+    /// Atenção: Este validator é utilizado para salvar a categoria e subcategoria separadamente.
+    /// Ao adicionar uma nova validação, cuidar para não prejudicar o outro.
     protected function rules(): array
     {
         $table = (new Categoria())->getTable();
         return array(
             'descricao' => "required|unique:$table|max:50",
-            'subcategorias' => "required|array|min:1",
+            'subcategorias' => "array|min:1",
         );
     }
 
     protected function messages(): array
     {
         return array(
-            'descricao.required' => "O campo descrição da categoria é obrigatório!",
+            'descricao.required' => "O campo descrição é obrigatório!",
             'unique' => "Já existe uma categoria com esta descrição!",
-            'max' => "Descrição da categoria muito longa!",
+            'max' => "Descrição muito longa!",
             'subcategorias.required' => self::MESSAGE_SUBCATEGORIAS,
             'array' => self::MESSAGE_SUBCATEGORIAS,
             'min' => self::MESSAGE_SUBCATEGORIAS,

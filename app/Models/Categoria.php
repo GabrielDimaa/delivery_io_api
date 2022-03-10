@@ -17,4 +17,9 @@ class Categoria extends Model
     {
         return $this->hasMany(Subcategoria::class, 'id_categoria', 'id_categoria');
     }
+
+    public function complementos()
+    {
+        return $this::hasMany(Complemento::class, 'id_categoria', 'id_categoria');
+    }
 }
