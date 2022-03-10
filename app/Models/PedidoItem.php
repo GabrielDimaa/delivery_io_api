@@ -21,4 +21,10 @@ class PedidoItem extends Model
         'quantidade',
         'descricao_subcategoria'
     ];
+
+    protected $casts = [
+        'valor_unitario' => 'double',
+        'valor_total' => 'double',
+        'quantidade' => 'double'
+    ];
 }

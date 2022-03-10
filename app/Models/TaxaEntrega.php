@@ -19,4 +19,8 @@ class TaxaEntrega extends Model
         'descricao',
         'valor',
     ];
+
+    protected $casts = [
+        'valor' => 'double'
+    ];
 }

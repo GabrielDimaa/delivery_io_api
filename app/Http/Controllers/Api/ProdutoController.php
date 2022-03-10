@@ -38,7 +38,7 @@ class ProdutoController extends BaseController
                 throw new Exception("Subcategoria não encontrada!");
             }
 
-            //Verifica se a subcategoria pertence a subcategoria passada na requisição.
+            //Verifica se a subcategoria pertence a categoria passada na requisição.
             if ($subcategoria->id_categoria != $data['id_categoria']) {
                 throw new Exception("Subcategoria não pertence a categoria selecionada.", 422);
             }

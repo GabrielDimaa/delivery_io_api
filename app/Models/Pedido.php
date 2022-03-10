@@ -35,6 +35,13 @@ class Pedido extends Model
         'valor_taxa_entrega',
     ];
 
+    protected $casts = [
+        'valor_total' => 'double',
+        'troco' => 'double',
+        'valor_pago' => 'double',
+        'valor_taxa_entrega' => 'double'
+    ];
+
     public function itens()
     {
         return $this::hasMany(PedidoItem::class, 'id_pedido', 'id_pedido');
