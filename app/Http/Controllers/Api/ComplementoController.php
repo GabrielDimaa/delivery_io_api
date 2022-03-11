@@ -74,7 +74,9 @@ class ComplementoController extends BaseController
     }
 
     public function getCategoriasComplementos(): JsonResponse {
-        $categoriasComplemento = Categoria::with('complementos')->has('complementos')->get();
+        $categoriasComplemento = Categoria::with(['complementos' => function($q) {
+            $q->orderBy('descricao');
+        }])->has('complementos')->get();
 
         $data = array(
             'count' => count($categoriasComplemento),
