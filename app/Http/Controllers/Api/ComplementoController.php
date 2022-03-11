@@ -74,11 +74,11 @@ class ComplementoController extends BaseController
     }
 
     public function getCategoriasComplementos(): JsonResponse {
-        $complemento = Categoria::with('complementos')->get();
+        $categoriasComplemento = Categoria::with('complementos')->has('complementos')->get();
 
         $data = array(
-            'count' => count($complemento),
-            'list' => $complemento,
+            'count' => count($categoriasComplemento),
+            'list' => $categoriasComplemento,
         );
 
         return $this->sendResponse($data);
