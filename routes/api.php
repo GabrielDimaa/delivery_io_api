@@ -36,13 +36,11 @@ Route::middleware([SecretMiddleware::class])->group(function () {
         Route::apiResource('produtos', ProdutoController::class);
         Route::apiResource('taxas_entrega', TaxaEntregaController::class);
 
-        Route::group(['prefix' => 'complementos'], function () {
-            Route::apiResource('/', ComplementoController::class);
-            Route::get('categorias_complementos', [ComplementoController::class, 'getCategoriasComplementos']);
-        });
+        Route::get('complementos/categorias_complementos', [ComplementoController::class, 'getCategoriasComplementos']);
+        Route::apiResource('complementos', ComplementoController::class);
 
+        Route::apiResource('pedidos', PedidoController::class);
         Route::group(['prefix' => 'pedidos'], function () {
-            Route::apiResource('/', PedidoController::class);
             Route::put('status/{id}', [PedidoController::class, 'alterarStatusPedido']);
             Route::put('cancelar/{id}', [PedidoController::class, 'cancelarPedido']);
         });
