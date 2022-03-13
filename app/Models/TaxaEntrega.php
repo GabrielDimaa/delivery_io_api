@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\TimestampSerializable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class TaxaEntrega extends Model
 {
-    use HasFactory;
+    use HasFactory, TimestampSerializable;
 
     protected $table = 'taxas_entrega';
     protected $primaryKey = 'id_taxa_entrega';

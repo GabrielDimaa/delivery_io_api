@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\TimestampSerializable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PedidoItem extends Model
 {
-    use HasFactory;
+    use HasFactory, TimestampSerializable;
 
     protected $table = 'pedido_itens';
     protected $primaryKey = 'id_pedido_item';

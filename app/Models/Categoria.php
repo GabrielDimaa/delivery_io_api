@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\TimestampSerializable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Categoria extends Model
 {
-    use HasFactory;
+    use HasFactory, TimestampSerializable;
 
     protected $primaryKey = 'id_categoria';
 
