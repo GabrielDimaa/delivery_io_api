@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CategoriaController;
 use App\Http\Controllers\Api\ComplementoController;
 use App\Http\Controllers\Api\PedidoController;
 use App\Http\Controllers\Api\ProdutoController;
+use App\Http\Controllers\Api\RelatorioController;
 use App\Http\Controllers\Api\TaxaEntregaController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Middleware\JwtMiddleware;
@@ -33,8 +34,10 @@ Route::middleware([SecretMiddleware::class])->group(function () {
     Route::middleware([JwtMiddleware::class])->group(function () {
         Route::post('auth/user', [AuthController::class, 'getUser']);
         Route::apiResource('categorias', CategoriaController::class);
-        Route::apiResource('produtos', ProdutoController::class);
         Route::apiResource('taxas_entrega', TaxaEntregaController::class);
+
+        Route::get('produtos/produtos_mais_vendidos', [ProdutoController::class, 'getProdutosMaisVendidos']);
+        Route::apiResource('produtos', ProdutoController::class);
 
         Route::get('complementos/categorias_complementos', [ComplementoController::class, 'getCategoriasComplementos']);
         Route::apiResource('complementos', ComplementoController::class);

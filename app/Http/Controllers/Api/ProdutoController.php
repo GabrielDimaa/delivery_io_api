@@ -121,6 +121,14 @@ class ProdutoController extends BaseController
         return $this->sendResponse(array());
     }
 
+    ///Busca os produtos mais vendidos
+    public function getProdutosMaisVendidos(): JsonResponse
+    {
+        $produtos = Produto::getProdutosMaisVendidos();
+
+        return $this->sendResponse($produtos);
+    }
+
     protected function rules()
     {
         return array(

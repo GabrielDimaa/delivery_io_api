@@ -11,6 +11,7 @@ use App\Models\Produto;
 use App\Models\TaxaEntrega;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Broadcasting\BroadcastException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +21,9 @@ class PedidoController extends BaseController
 {
     public function store(Request $request): JsonResponse
     {
+        //Adicionado variável fora do try para poder reutilizar caso estoure erro no broadcast.
+        $pedido = null;
+
         try {
             $data = $request->all();
 
@@ -115,11 +119,12 @@ class PedidoController extends BaseController
             $pedido = Pedido::with('itens')->find($pedido->id_pedido);
 
             Event::dispatch(new EnviarPedido($pedido));
-
-            return $this->sendResponse($pedido);
+        } catch (BroadcastException) {
         } catch (Exception $e) {
             DB::rollBack();
             return $this->sendResponseError($e->getMessage(), $e->getCode());
+        } finally {
+            return $this->sendResponse($pedido);
         }
     }
 

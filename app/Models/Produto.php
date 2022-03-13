@@ -27,6 +27,22 @@ class Produto extends Model
         'preco' => 'double'
     ];
 
+    //Busca os 5 produtos mais vendidos
+    public static function getProdutosMaisVendidos(): Collection
+    {
+        $quantidadeQuery = DB::table('pedido_itens')
+            ->select('id_produto', DB::raw('count(*) AS quantidade'))
+            ->groupBy('id_produto')
+            ->orderBy('quantidade', 'desc')
+            ->limit(5);
+
+        return DB::table('produtos')
+            ->select('produtos.*', 'produtos_quantidade.quantidade')
+            ->joinSub($quantidadeQuery, 'produtos_quantidade', function ($join) {
+                $join->on('produtos.id_produto', '=', 'produtos_quantidade.id_produto');
+            })->get();
+    }
+
     public function categoria()
     {
         return $this->belongsTo(Categoria::class, 'id_categoria', 'id_categoria');
