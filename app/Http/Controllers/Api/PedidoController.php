@@ -262,7 +262,7 @@ class PedidoController extends BaseController
 
         $countTotal = Pedido::where($column, '>', $date)->count();
         $countEmAberto = Pedido::where($column, '>', $date)->where('status', StatusPedido::EmAberto->value)->count();
-        $countFinalizados = Pedido::where($column, '>', $date)->where('status', StatusPedido::EmAberto->value)->count();
+        $countFinalizados = Pedido::where($column, '>', $date)->where('status', StatusPedido::Finalizado->value)->count();
 
         return $this->sendResponse(array(
             "total_pedidos" => $countTotal,
