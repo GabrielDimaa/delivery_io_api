@@ -254,6 +254,23 @@ class PedidoController extends BaseController
         }
     }
 
+    ///Busca as quantidades de pedidos (Total, Em aberto e Finalizados) nas últimas 24h.
+    public function countsPedido(): JsonResponse
+    {
+        $column = 'created_at';
+        $date = Carbon::now()->subDay();
+
+        $countTotal = Pedido::where($column, '>', $date)->count();
+        $countEmAberto = Pedido::where($column, '>', $date)->where('status', StatusPedido::EmAberto->value)->count();
+        $countFinalizados = Pedido::where($column, '>', $date)->where('status', StatusPedido::EmAberto->value)->count();
+
+        return $this->sendResponse(array(
+            "total_pedidos" => $countTotal,
+            "em_aberto" => $countEmAberto,
+            "finalizados" => $countFinalizados
+        ));
+    }
+
     private function gerarCodigoPedido(): string
     {
         return substr(uniqid(rand()), 0, 5);

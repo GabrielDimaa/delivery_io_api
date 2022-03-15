@@ -42,10 +42,11 @@ Route::middleware([SecretMiddleware::class])->group(function () {
         Route::get('complementos/categorias_complementos', [ComplementoController::class, 'getCategoriasComplementos']);
         Route::apiResource('complementos', ComplementoController::class);
 
-        Route::apiResource('pedidos', PedidoController::class);
         Route::group(['prefix' => 'pedidos'], function () {
+            Route::get('counts', [PedidoController::class, 'countsPedido']);
             Route::put('status/{id}', [PedidoController::class, 'alterarStatusPedido']);
             Route::put('cancelar/{id}', [PedidoController::class, 'cancelarPedido']);
         });
+        Route::apiResource('pedidos', PedidoController::class);
     });
 });
