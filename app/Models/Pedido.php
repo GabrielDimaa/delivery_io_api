@@ -45,6 +45,6 @@ class Pedido extends Model
 
     public function itens()
     {
-        return $this::hasMany(PedidoItem::class, 'id_pedido', 'id_pedido');
+        return $this->hasMany(PedidoItem::class, 'id_pedido', 'id_pedido');
     }
 }

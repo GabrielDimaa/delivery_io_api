@@ -5,13 +5,17 @@ namespace App\Http\Controllers\Api;
 use App\Enums\StatusPedido;
 use App\Enums\TipoEntrega;
 use App\Events\Pedido\EnviarPedido;
+use App\Models\Complemento;
 use App\Models\Pedido;
+use App\Models\PedidoComplementoItem;
 use App\Models\PedidoItem;
 use App\Models\Produto;
 use App\Models\TaxaEntrega;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Broadcasting\BroadcastException;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -40,7 +44,7 @@ class PedidoController extends BaseController
             //Valida os campos do pedido.
             $validate = $this->validator($data, $this->rules(), $this->messages());
             if ($validate->fails()) {
-                return $this->sendResponseError($validate->errors()->first(), 422);
+                throw new Exception($validate->errors()->first(), 422);
             }
 
             //Valida o endereço e o tipo de entrega caso seja "Entrega"
@@ -94,14 +98,14 @@ class PedidoController extends BaseController
                 //Valida os itens do pedido.
                 $validate = $this->validateItens($item);
                 if ($validate->fails()) {
-                    return $this->sendResponseError($validate->errors()->first(), 422);
+                    throw new Exception($validate->errors()->first(), 422);
                 }
 
                 //Verifica se existe ou está ativo o produto.
                 $produto = Produto::with('subcategoria')->find($item['id_produto']);
                 if (is_null($produto) || !$produto->ativo) {
                     $produtoDescricao = @$produto->descricao ?? "Item";
-                    throw new Exception("{$produtoDescricao} indisponível!", 500);
+                    throw new Exception("$produtoDescricao indisponível!", 500);
                 }
 
                 //Completa os campos para salvar o item no banco de dados.
@@ -109,7 +113,29 @@ class PedidoController extends BaseController
                 $item['descricao'] = $produto->descricao;
                 $item['descricao_subcategoria'] = $produto->subcategoria->descricao;
 
-                PedidoItem::create($item);
+                $pedidoItem = PedidoItem::create($item);
+
+                foreach ($item['complementos'] as $complementoItem) {
+                    //Valida os complementos do item.
+                    $validate = $this->validateComplementoItens($complementoItem);
+                    if ($validate->fails()) {
+                        throw new Exception($validate->errors()->first(), 422);
+                    }
+
+                    //Verifica se existe o complemento.
+                    $complemento = Complemento::with('categoria')->find($complementoItem['id_complemento']);
+
+                    if (is_null($complemento)) {
+                        throw new Exception("Complemento indisponível!", 500);
+                    }
+
+                    $complementoItem['id_pedido_item'] = $pedidoItem->id_pedido_item;
+                    $complementoItem['id_pedido'] = $pedido->id_pedido;
+                    $complementoItem['descricao'] = $complemento->descricao;
+                    $complementoItem['descricao_categoria'] = $complemento->categoria->descricao;
+
+                    PedidoComplementoItem::create($complementoItem);
+                }
             }
 
             #endregion
@@ -119,12 +145,13 @@ class PedidoController extends BaseController
             $pedido = Pedido::with('itens')->find($pedido->id_pedido);
 
             Event::dispatch(new EnviarPedido($pedido));
+
+            return $this->sendResponse($pedido);
         } catch (BroadcastException) {
+            return $this->sendResponse($pedido);
         } catch (Exception $e) {
             DB::rollBack();
             return $this->sendResponseError($e->getMessage(), $e->getCode());
-        } finally {
-            return $this->sendResponse($pedido);
         }
     }
 
@@ -276,12 +303,29 @@ class PedidoController extends BaseController
         return substr(uniqid(rand()), 0, 5);
     }
 
-    private function validateItens($item)
+    private function validateItens($item): Validator
     {
         return $this->validator(
             $item,
             array(
                 'id_produto' => 'required|integer',
+                'valor_unitario' => 'required|numeric',
+                'quantidade' => 'required|numeric',
+            ),
+            array(
+                'required' => "Campo obrigatório!",
+                'numeric' => "Valor inválido!",
+                'integer' => "Valor inválido!",
+            ),
+        );
+    }
+
+    private function validateComplementoItens($item): Validator
+    {
+        return $this->validator(
+            $item,
+            array(
+                'id_complemento' => 'required|integer',
                 'valor_unitario' => 'required|numeric',
                 'quantidade' => 'required|numeric',
             ),

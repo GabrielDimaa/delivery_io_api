@@ -21,6 +21,6 @@ class Categoria extends Model
 
     public function complementos()
     {
-        return $this::hasMany(Complemento::class, 'id_categoria', 'id_categoria');
+        return $this->hasMany(Complemento::class, 'id_categoria', 'id_categoria');
     }
 }

@@ -6,29 +6,22 @@ use App\Traits\TimestampSerializable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PedidoItem extends Model
+class PedidoComplementoItem extends Model
 {
     use HasFactory, TimestampSerializable;
 
-    protected $table = 'pedido_itens';
+    protected $table = 'pedido_complemento_itens';
     protected $primaryKey = 'id_pedido_item';
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::addGlobalScope(function ($query) {
-            $query->with('complementoItens');
-        });
-    }
 
     protected $fillable = [
+        'id_pedido_item',
         'id_pedido',
-        'id_produto',
+        'id_complemento',
         'descricao',
         'valor_unitario',
         'valor_total',
         'quantidade',
-        'descricao_subcategoria'
+        'descricao_categoria'
     ];
 
     protected $casts = [
@@ -36,9 +29,4 @@ class PedidoItem extends Model
         'valor_total' => 'double',
         'quantidade' => 'double'
     ];
-
-    public function complementoItens()
-    {
-        return $this->hasMany(PedidoComplementoItem::class, 'id_pedido_item', 'id_pedido_item');
-    }
 }
