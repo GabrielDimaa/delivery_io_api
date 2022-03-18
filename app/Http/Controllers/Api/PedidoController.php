@@ -115,26 +115,29 @@ class PedidoController extends BaseController
 
                 $pedidoItem = PedidoItem::create($item);
 
-                foreach ($item['complementos'] as $complementoItem) {
-                    //Valida os complementos do item.
-                    $validate = $this->validateComplementoItens($complementoItem);
-                    if ($validate->fails()) {
-                        throw new Exception($validate->errors()->first(), 422);
+                //Verifica se existe complementos no item do pedido.
+                if (isset($item['complementos'])) {
+                    foreach ($item['complementos'] as $complementoItem) {
+                        //Valida os complementos do item.
+                        $validate = $this->validateComplementoItens($complementoItem);
+                        if ($validate->fails()) {
+                            throw new Exception($validate->errors()->first(), 422);
+                        }
+
+                        //Verifica se existe o complemento.
+                        $complemento = Complemento::with('categoria')->find($complementoItem['id_complemento']);
+
+                        if (is_null($complemento)) {
+                            throw new Exception("Complemento indisponível!", 500);
+                        }
+
+                        $complementoItem['id_pedido_item'] = $pedidoItem->id_pedido_item;
+                        $complementoItem['id_pedido'] = $pedido->id_pedido;
+                        $complementoItem['descricao'] = $complemento->descricao;
+                        $complementoItem['descricao_categoria'] = $complemento->categoria->descricao;
+
+                        PedidoComplementoItem::create($complementoItem);
                     }
-
-                    //Verifica se existe o complemento.
-                    $complemento = Complemento::with('categoria')->find($complementoItem['id_complemento']);
-
-                    if (is_null($complemento)) {
-                        throw new Exception("Complemento indisponível!", 500);
-                    }
-
-                    $complementoItem['id_pedido_item'] = $pedidoItem->id_pedido_item;
-                    $complementoItem['id_pedido'] = $pedido->id_pedido;
-                    $complementoItem['descricao'] = $complemento->descricao;
-                    $complementoItem['descricao_categoria'] = $complemento->categoria->descricao;
-
-                    PedidoComplementoItem::create($complementoItem);
                 }
             }
 
