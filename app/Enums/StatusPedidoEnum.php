@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum StatusPedido : int
+enum StatusPedidoEnum : int
 {
     case EmAberto = 1;
     case Aceito = 2;

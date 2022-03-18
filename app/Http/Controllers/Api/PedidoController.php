@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Enums\StatusPedido;
-use App\Enums\TipoEntrega;
+use App\Enums\StatusPedidoEnum;
+use App\Enums\TipoEntregaEnum;
 use App\Events\Pedido\EnviarPedido;
 use App\Models\Complemento;
 use App\Models\Pedido;
@@ -39,7 +39,7 @@ class PedidoController extends BaseController
             $data['codigo_pedido'] = $this->gerarCodigoPedido();
 
             //Seta o status do pedido
-            $data['status'] = StatusPedido::EmAberto->value;
+            $data['status'] = StatusPedidoEnum::EmAberto->value;
 
             //Valida os campos do pedido.
             $validate = $this->validator($data, $this->rules(), $this->messages());
@@ -48,7 +48,7 @@ class PedidoController extends BaseController
             }
 
             //Valida o endereço e o tipo de entrega caso seja "Entrega"
-            if ($data['tipo_entrega'] == TipoEntrega::Entrega->value) {
+            if ($data['tipo_entrega'] == TipoEntregaEnum::Entrega->value) {
                 if (is_null($data['rua']) || is_null($data['bairro']) || is_null($data['numero']) || is_null($data['cep']) || is_null($data['cidade'])) {
                     throw new Exception("É necessário informar o endereço completo para entrega!", 500);
                 }
@@ -180,11 +180,11 @@ class PedidoController extends BaseController
         $query = Pedido::with('itens');
 
         if (!is_null($status)) {
-            if ($status == StatusPedido::Aceito->value) {
+            if ($status == StatusPedidoEnum::Aceito->value) {
                 $query->whereIn('status', array(
-                    StatusPedido::Aceito->value,
-                    StatusPedido::EmRotaDeEntrega->value,
-                    StatusPedido::ProntoParaRetirada->value
+                    StatusPedidoEnum::Aceito->value,
+                    StatusPedidoEnum::EmRotaDeEntrega->value,
+                    StatusPedidoEnum::ProntoParaRetirada->value
                 ));
             } else {
                 $query->where('status', $status);
@@ -231,7 +231,7 @@ class PedidoController extends BaseController
             $data = $request->all();
 
             $pedido = Pedido::find($idPedido);
-            $status = StatusPedido::tryFrom($data['status']);
+            $status = StatusPedidoEnum::tryFrom($data['status']);
 
             if (is_null($pedido)) {
                 throw new Exception("Pedido não encontrado!", 404);
@@ -241,12 +241,12 @@ class PedidoController extends BaseController
                 throw new Exception("Status inexistente!", 404);
             }
 
-            if ($pedido->tipo_entrega == TipoEntrega::Entrega->value) {
-                if ($data['status'] == StatusPedido::ProntoParaRetirada->value) {
+            if ($pedido->tipo_entrega == TipoEntregaEnum::Entrega->value) {
+                if ($data['status'] == StatusPedidoEnum::ProntoParaRetirada->value) {
                     throw new Exception("Pedido com entrega não pode ser retirado!", 422);
                 }
             } else {
-                if ($data['status'] == StatusPedido::EmRotaDeEntrega->value) {
+                if ($data['status'] == StatusPedidoEnum::EmRotaDeEntrega->value) {
                     throw new Exception("Pedido para retirada não pode ser entregue!", 422);
                 }
             }
@@ -269,11 +269,11 @@ class PedidoController extends BaseController
                 throw new Exception("Pedido não encontrado!", 404);
             }
 
-            if ($pedido->status == StatusPedido::Finalizado->value) {
+            if ($pedido->status == StatusPedidoEnum::Finalizado->value) {
                 throw new Exception("Pedido finalizado não pode ser cancelado!", 422);
             }
 
-            $pedido->status = StatusPedido::Cancelado->value;
+            $pedido->status = StatusPedidoEnum::Cancelado->value;
             $pedido->cancelado_at = Carbon::now();
 
             $pedido->save();
@@ -291,8 +291,8 @@ class PedidoController extends BaseController
         $date = Carbon::now()->subDay();
 
         $countTotal = Pedido::where($column, '>', $date)->count();
-        $countEmAberto = Pedido::where($column, '>', $date)->where('status', StatusPedido::EmAberto->value)->count();
-        $countFinalizados = Pedido::where($column, '>', $date)->where('status', StatusPedido::Finalizado->value)->count();
+        $countEmAberto = Pedido::where($column, '>', $date)->where('status', StatusPedidoEnum::EmAberto->value)->count();
+        $countFinalizados = Pedido::where($column, '>', $date)->where('status', StatusPedidoEnum::Finalizado->value)->count();
 
         return $this->sendResponse(array(
             "total_pedidos" => $countTotal,

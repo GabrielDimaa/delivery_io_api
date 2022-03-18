@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum TipoEntrega : int {
+enum TipoEntregaEnum : int {
     case Entrega = 1;
     case Retirada = 2;
 }
