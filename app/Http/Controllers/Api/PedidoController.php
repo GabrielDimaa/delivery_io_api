@@ -15,7 +15,6 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Broadcasting\BroadcastException;
 use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -301,6 +300,53 @@ class PedidoController extends BaseController
             "em_aberto" => $countEmAberto,
             "finalizados" => $countFinalizados
         ));
+    }
+
+    public function avaliarPedido(Request $request, int $idPedido): JsonResponse
+    {
+        try {
+            $data = $request->only('avaliacao');
+
+            $pedido = Pedido::find($idPedido);
+            if (is_null($pedido)) {
+                throw new Exception("Pedido não encontrado!", 404);
+            }
+
+            if (!isset($data['avaliacao']) || $data['avaliacao'] < 0 || $data['avaliacao'] > 5) {
+                throw new Exception("Avaliação inválida!", 422);
+            }
+
+            $pedido->avaliacao = $data['avaliacao'];
+            $pedido->save();
+
+            return $this->sendResponse([]);
+        } catch (Exception $e) {
+            return $this->sendResponseError($e->getMessage(), $e->getCode());
+        }
+    }
+
+    ///Só será permitido buscar o pedido pelo código se for passado o nome do cliente junto.
+    public function getPorCodigoPedido(Request $request, int $codigoPedido): JsonResponse
+    {
+        $data = $request->all();
+
+//        if (!isset($data['cliente_nome'])) {
+//            return $this->sendResponseError("Nome não encontrado!");
+//        }
+
+        $pedido = Pedido::with(['itens', 'historicoStatus' => function ($q) {
+            $q->orderBy('created_at');
+        }])->where('codigo_pedido', $codigoPedido)->first();
+
+//        if (is_null($pedido) || strtolower($pedido->nome) != strtolower($data['cliente_nome'])) {
+//            return $this->sendResponseError("Pedido não encontrado!");
+//        }
+
+        if (is_null($pedido)) {
+            return $this->sendResponseError("Pedido não encontrado!");
+        }
+
+        return $this->sendResponse($pedido);
     }
 
     private function gerarCodigoPedido(): string

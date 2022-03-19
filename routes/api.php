@@ -31,6 +31,9 @@ Route::middleware([SecretMiddleware::class])->group(function () {
         Route::post('refresh', [AuthController::class, 'refresh']);
     });
 
+    Route::get('pedidos/{codigo_pedido}', [PedidoController::class, 'getPorCodigoPedido']);
+    Route::put('pedidos/avaliar/{id}', [PedidoController::class, 'avaliarPedido']);
+
     Route::middleware([JwtMiddleware::class])->group(function () {
         Route::post('auth/user', [AuthController::class, 'getUser']);
         Route::apiResource('categorias', CategoriaController::class);

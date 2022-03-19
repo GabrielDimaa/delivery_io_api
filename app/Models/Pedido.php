@@ -35,6 +35,7 @@ class Pedido extends Model
         'id_taxa_entrega',
         'descricao_taxa_entrega',
         'valor_taxa_entrega',
+        'avaliacao'
     ];
 
     protected $casts = [

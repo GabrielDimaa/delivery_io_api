@@ -39,6 +39,7 @@ class CreatePedidosTable extends Migration
                 ->nullOnDelete();
             $table->string('descricao_taxa_entrega',50)->nullable();
             $table->double('valor_taxa_entrega')->nullable();
+            $table->integer('avaliacao')->nullable();
             $table->timestamps();
         });
     }
