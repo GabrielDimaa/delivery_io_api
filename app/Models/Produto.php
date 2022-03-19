@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\TimestampSerializable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -43,12 +44,12 @@ class Produto extends Model
             })->get();
     }
 
-    public function categoria()
+    public function categoria(): BelongsTo
     {
         return $this->belongsTo(Categoria::class, 'id_categoria', 'id_categoria');
     }
 
-    public function subcategoria()
+    public function subcategoria(): BelongsTo
     {
         return $this->belongsTo(Subcategoria::class, 'id_subcategoria', 'id_subcategoria');
     }

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\TimestampSerializable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Categoria extends Model
 {
@@ -14,12 +15,12 @@ class Categoria extends Model
 
     protected $fillable = ['descricao'];
 
-    public function subcategorias()
+    public function subcategorias(): HasMany
     {
         return $this->hasMany(Subcategoria::class, 'id_categoria', 'id_categoria');
     }
 
-    public function complementos()
+    public function complementos(): HasMany
     {
         return $this->hasMany(Complemento::class, 'id_categoria', 'id_categoria');
     }

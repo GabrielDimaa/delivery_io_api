@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\TimestampSerializable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PedidoItem extends Model
 {
@@ -37,7 +38,7 @@ class PedidoItem extends Model
         'quantidade' => 'double'
     ];
 
-    public function complementoItens()
+    public function complementoItens(): HasMany
     {
         return $this->hasMany(PedidoComplementoItem::class, 'id_pedido_item', 'id_pedido_item');
     }
