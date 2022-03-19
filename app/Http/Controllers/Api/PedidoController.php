@@ -160,7 +160,9 @@ class PedidoController extends BaseController
 
     public function show(int $id): JsonResponse
     {
-        $pedido = Pedido::with('itens')->find($id);
+        $pedido = Pedido::with(['itens', 'historicoStatus' => function ($q) {
+            $q->orderBy('created_at');
+        }])->find($id);
 
         if (is_null($pedido)) {
             return $this->sendResponseError("Pedido não encontrado!");

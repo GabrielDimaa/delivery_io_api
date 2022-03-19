@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\TimestampSerializable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Pedido extends Model
 {
@@ -43,8 +44,13 @@ class Pedido extends Model
         'valor_taxa_entrega' => 'double'
     ];
 
-    public function itens()
+    public function itens(): HasMany
     {
         return $this->hasMany(PedidoItem::class, 'id_pedido', 'id_pedido');
+    }
+
+    public function historicoStatus(): HasMany
+    {
+        return $this->hasMany(PedidoStatus::class, 'id_pedido', 'id_pedido');
     }
 }
