@@ -5,7 +5,6 @@ use App\Http\Controllers\Api\CategoriaController;
 use App\Http\Controllers\Api\ComplementoController;
 use App\Http\Controllers\Api\PedidoController;
 use App\Http\Controllers\Api\ProdutoController;
-use App\Http\Controllers\Api\RelatorioController;
 use App\Http\Controllers\Api\TaxaEntregaController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Middleware\JwtMiddleware;

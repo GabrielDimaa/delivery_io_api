@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\StatusPedidoEnum;
 use App\Enums\TipoEntregaEnum;
+use App\Events\Pedido\AcompanharPedido;
 use App\Events\Pedido\EnviarPedido;
 use App\Models\Complemento;
 use App\Models\Pedido;
 use App\Models\PedidoComplementoItem;
 use App\Models\PedidoItem;
+use App\Models\PedidoStatus;
 use App\Models\Produto;
 use App\Models\TaxaEntrega;
 use Carbon\Carbon;
@@ -228,15 +230,20 @@ class PedidoController extends BaseController
 
     public function alterarStatusPedido(Request $request, int $idPedido): JsonResponse
     {
+        $pedido = null;
+
         try {
             $data = $request->all();
 
-            $pedido = Pedido::find($idPedido);
-            $status = StatusPedidoEnum::tryFrom($data['status']);
+            $pedido = Pedido::with(['historicoStatus' => function ($q) {
+                $q->orderBy('created_at');
+            }])->find($idPedido);
 
             if (is_null($pedido)) {
                 throw new Exception("Pedido não encontrado!", 404);
             }
+
+            $status = StatusPedidoEnum::tryFrom($data['status']);
 
             if (is_null($status)) {
                 throw new Exception("Status inexistente!", 404);
@@ -255,6 +262,10 @@ class PedidoController extends BaseController
             $pedido->status = $status->value;
             $pedido->save();
 
+            Event::dispatch(new AcompanharPedido($pedido));
+
+            return $this->sendResponse($pedido);
+        } catch (BroadcastException) {
             return $this->sendResponse($pedido);
         } catch (Exception $e) {
             return $this->sendResponseError($e->getMessage(), $e->getCode());
@@ -263,8 +274,12 @@ class PedidoController extends BaseController
 
     public function cancelarPedido(int $idPedido): JsonResponse
     {
+        $pedido = null;
+
         try {
-            $pedido = Pedido::find($idPedido);
+            $pedido = Pedido::with(['historicoStatus' => function ($q) {
+                $q->orderBy('created_at');
+            }])->find($idPedido);
 
             if (is_null($pedido)) {
                 throw new Exception("Pedido não encontrado!", 404);
@@ -279,6 +294,10 @@ class PedidoController extends BaseController
 
             $pedido->save();
 
+            Event::dispatch(new AcompanharPedido($pedido));
+
+            return $this->sendResponse($pedido);
+        } catch (BroadcastException) {
             return $this->sendResponse($pedido);
         } catch (Exception $e) {
             return $this->sendResponseError($e->getMessage(), $e->getCode());
