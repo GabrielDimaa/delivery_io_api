@@ -16,6 +16,12 @@ class BroadcastServiceProvider extends ServiceProvider
     {
         Broadcast::routes();
 
-        require base_path('routes/channels.php');
+        Broadcast::channel('pedido', function ($pedido) {
+            return !is_null($pedido->id_pedido);
+        });
+
+        Broadcast::channel('acompanhar_pedido.{id}', function ($pedido) {
+            return !is_null($pedido->id_pedido);
+        });
     }
 }
